@@ -5,16 +5,12 @@
 
 // https://www.instructables.com/id/Lilygo-T-Watch-2020-Arduino-Framework/
 // By DanGeiger
-
-#include "Adafruit_MQTT.h"
-#include "Adafruit_MQTT_Client.h"
 #include "config.h"
-#include <wifi.h>
-#include <ConfigFile_ETS_MQTT.h>
-#include <ConfigFile_WifiInfo.h>
 #include <soc/rtc.h>
-
 TTGOClass *ttgo;
+#include <BluetoothSerial.h>
+
+BluetoothSerial SerialBT;
 
 uint32_t targetTime = 0; // for next 1 second display update
 // uint32_t clockUpTime = 0;      // track the time the clock is displayed
@@ -33,6 +29,7 @@ void prtTime(byte digit);
 void setMenuDisplay(int mSel);
 
 byte xcolon = 0; // location of the colon
+
 
 void displayTime(boolean fullUpdate) {
 
@@ -55,35 +52,48 @@ void displayTime(boolean fullUpdate) {
     // Font 7 is a 7-seg display but only contains
     // characters [space] 0 1 2 3 4 5 6 7 8 9 0 : .
 
-    ttgo->tft->setTextColor(0x39C4, TFT_BLACK); // Set desired color
+    ttgo->tft->setTextColor(0x52AA, TFT_BLACK); // Set desired color
     ttgo->tft->drawString("88:88", xpos, ypos, 7);
-    ttgo->tft->setTextColor(0xFBE0, TFT_BLACK); // Orange
+    ttgo->tft->setTextColor(0x0482, TFT_BLACK); // Clock Digit color
 
     if (hh < 10)
       xpos += ttgo->tft->drawChar('0', xpos, ypos, 7);
     xpos += ttgo->tft->drawNumber(hh, xpos, ypos, 7);
     xcolon = xpos + 3;
+    ttgo->tft->setTextColor(0x52AA, TFT_BLACK);
     xpos += ttgo->tft->drawChar(':', xcolon, ypos, 7);
+    ttgo->tft->setTextColor(0x0482, TFT_BLACK);
     if (mm < 10)
       xpos += ttgo->tft->drawChar('0', xpos, ypos, 7);
     ttgo->tft->drawNumber(mm, xpos, ypos, 7);
   }
 
   if (ss % 2) { // Toggle the colon every second
-    ttgo->tft->setTextColor(0x39C4, TFT_BLACK);
+    ttgo->tft->setTextColor(0xF800, TFT_BLACK);
     xpos += ttgo->tft->drawChar(':', xcolon, ypos, 7);
-    ttgo->tft->setTextColor(0xFBE0, TFT_BLACK);
+    ttgo->tft->setTextColor(0x2A05, TFT_BLACK);
   } else {
     ttgo->tft->drawChar(':', xcolon, ypos, 7);
   }
-  ttgo->tft->setTextSize(3);
-  ttgo->tft->setCursor(10, 210);
 
+  ttgo->tft->setTextColor(0x2A05, TFT_BLACK);
+  ttgo->tft->setTextSize(2);
+  ttgo->tft->setCursor(52, 150);
+  if (mmonth < 10)
+    ttgo->tft->print(0);
   ttgo->tft->print(mmonth);
   ttgo->tft->print("/");
+  if (dday < 10)
+    ttgo->tft->print(0);
   ttgo->tft->print(dday);
   ttgo->tft->print("/");
   ttgo->tft->print(yyear);
+
+  ttgo->tft->setTextFont(1);
+  ttgo->tft->setTextSize(2);
+  ttgo->tft->setCursor(20, 210);
+  ttgo->tft->setTextColor(0x4228, TFT_BLACK);
+  ttgo->tft->print("tnowroz@gmail.com");
 }
 
 // Show the accelerometer working
@@ -203,7 +213,8 @@ void setMenuDisplay(int mSel) {
 
 void appTouch() {
   uint32_t endTime = millis() + 10000; // Timeout at 10 seconds
-  int16_t x, y;
+  int16_t x = 0, y = 0;
+  int16_t temp_x = 100, temp_y = 100;
   ttgo->tft->fillScreen(TFT_BLACK);
 
   while (endTime > millis()) {
@@ -215,7 +226,12 @@ void appTouch() {
     ttgo->tft->setCursor(80, 130);
     ttgo->tft->print("Y:");
     ttgo->tft->println(y);
-    MQTT_Publish(String(x) + "," + String(y));
+
+    if (((temp_x != x) && (temp_y != y))) {
+      SerialBT.println(String(x) + "," + String(y));
+    }
+    temp_x = x;
+    temp_y = y;
     delay(25);
   }
 
@@ -519,11 +535,9 @@ void appBattery() {
 
 void setup() {
   // initSetup();
-  connect_to_internet_Try_n_Times(10);
-  Connect_To_MQTT();
-
   ttgo = TTGOClass::getWatch();
   ttgo->begin();
+
   ttgo->tft->setTextFont(1);
   ttgo->tft->fillScreen(TFT_BLACK);
   ttgo->tft->setTextColor(
@@ -534,19 +548,20 @@ void setup() {
 
   // Check if the RTC clock matches, if not, use compile time
   ttgo->rtc->check();
-
   // Synchronize time to system time
   ttgo->rtc->syncToSystem();
 
   displayTime(true); // Our GUI to show the time
   ttgo->openBL();    // Turn on the backlight
+  ttgo->setBrightness(120);
+  SerialBT.begin("WatchAsMouse");
 }
 
 void loop() {
 
+
   if (targetTime < millis()) {
     targetTime = millis() + 1000;
-    displayTime(ss == 0); // Call every second but only update time every minute
   }
 
   int16_t x, y;

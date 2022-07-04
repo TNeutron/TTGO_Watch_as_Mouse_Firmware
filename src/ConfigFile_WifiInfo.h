@@ -5,7 +5,9 @@
 void connect_to_internet_Try_n_Times(int n) {
 
   WiFi.begin(WLAN_SSID, WLAN_PASS);
-  Serial.print("Connecting to WiFi ..");
+  ttgo->tft->setTextSize(2);
+  ttgo->tft->setCursor(0, 10);
+  ttgo->tft->print("Connecting Wifi");
 
   int attempts = 0;
   while (WiFi.status() != WL_CONNECTED) {

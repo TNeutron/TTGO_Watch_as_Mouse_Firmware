@@ -36,7 +36,12 @@ void MQTT_connect() {
     mqtt.disconnect();
   }
   Serial.println("MQTT Connected!");
-  delay(10);
+
+  ttgo->tft->setTextSize(2);
+  ttgo->tft->setCursor(0, 10);
+  ttgo->tft->print("Connected");
+
+  delay(1000);
 }
 
 bool Check_MQTT_Connectivity() {
