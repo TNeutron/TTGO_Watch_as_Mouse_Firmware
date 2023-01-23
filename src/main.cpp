@@ -243,11 +243,14 @@ void appTouch() {
 
   ttgo->tft->setTextSize(2);
   ttgo->tft->setTextColor(TFT_GREENYELLOW);
-
+  bool touched_ = false;
+  bool temp_touched_ = false;
+  
   while (m_mode) {
     ttgo->getTouch(x, y);
-
-    if (((temp_x != x) && (temp_y != y))) {
+    touched_ = ttgo->touched();
+    
+    if ( ((temp_x != x) && (temp_y != y)) || (temp_touched_ != touched_) ) {
       if ((x >= 20 && x <= (20 + 70)) && y >= 200 && y <= 225) {
         SerialBT.println("Left Clicked!");
       } else if ((x >= 170 && x <= 230) && (y >= 200 && y <= 225)) {
@@ -263,11 +266,16 @@ void appTouch() {
         ttgo->tft->setCursor(80, 130);
         ttgo->tft->print("Y: ");
         ttgo->tft->println(y);
-        SerialBT.println(String(x) + "," + String(y));
+        ttgo->tft->setCursor(90, 160);
+        ttgo->tft->print("T: ");
+        ttgo->tft->println(touched_);
+        
+        SerialBT.println(String(x) + "," + String(y) + "," + touched_);
       }
     }
     temp_x = x;
     temp_y = y;
+    temp_touched_ = touched_;
     delay(2);
   }
 
