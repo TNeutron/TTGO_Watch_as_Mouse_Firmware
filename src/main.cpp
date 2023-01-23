@@ -237,7 +237,7 @@ void appTouch() {
   int16_t x = 0, y = 0;
   int16_t temp_x = 100, temp_y = 100;
   ttgo->tft->fillScreen(TFT_BLACK);
-  Draw_Close_button(220, 5, 20, 30, "X", TFT_RED);
+  Draw_Close_button(215, 5, 20, 30, "X", TFT_RED);
   Draw_button_wText(20, 200, 70, 25, "Left Click", TFT_WHITE);
   Draw_button_wText(230 - 90, 200, 80, 25, "Right Click", TFT_WHITE);
 
@@ -251,10 +251,13 @@ void appTouch() {
     touched_ = ttgo->touched();
     
     if ( ((temp_x != x) && (temp_y != y)) || (temp_touched_ != touched_) ) {
-      if ((x >= 20 && x <= (20 + 70)) && y >= 200 && y <= 225) {
-        SerialBT.println("Left Clicked!");
-      } else if ((x >= 170 && x <= 230) && (y >= 200 && y <= 225)) {
-        SerialBT.println("Right Clicked!");
+
+      if ((x >= 20 && x <= (20 + 70)) && (y >= 200 && y <= 225)) {
+        if (touched_) SerialBT.println("Left Clicked!");
+        
+      } else if ((x >= 170 && x <= 230) && (y >= 200 && y <= 225) ) {
+        if (touched_) SerialBT.println("Right Clicked!");
+        
       } else if ((x >= 220 && x <= 240) && (y >= 0 && y <= 30)) {
           SerialBT.println("Close");
           m_mode = false;
@@ -276,7 +279,6 @@ void appTouch() {
     temp_x = x;
     temp_y = y;
     temp_touched_ = touched_;
-    delay(2);
   }
 
   while (ttgo->getTouch(x, y)) {
