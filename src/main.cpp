@@ -223,14 +223,22 @@ void Draw_button_wText(int x, int y, int w, int h, String txt, int color) {
   ttgo->tft->drawString(txt, x + 8, y + 10);
 }
 
+void Draw_Close_button(int x, int y, int w, int h, String txt, int color) {
+  ttgo->tft->drawRect(x, y, w, h, TFT_BLUE);
+  ttgo->tft->setTextColor(color);
+  ttgo->tft->setTextSize(2);
+  // ttgo->tft->setTextDatum(MC_DATUM);
+  ttgo->tft->drawString(txt, x + 4, y + 10);
+}
+
 void appTouch() {
   uint32_t endTime = millis() + 10 * 1000; // Timeout at 10 seconds
   int16_t x = 0, y = 0;
   int16_t temp_x = 100, temp_y = 100;
   ttgo->tft->fillScreen(TFT_BLACK);
+  Draw_Close_button(220, 5, 20, 30, "X", TFT_RED);
   Draw_button_wText(20, 200, 70, 25, "Left Click", TFT_WHITE);
   Draw_button_wText(230 - 90, 200, 80, 25, "Right Click", TFT_WHITE);
-  Draw_button_wText(230 - 30, 0, 30, 30, "X", TFT_RED);
 
   ttgo->tft->setTextSize(2);
   ttgo->tft->setTextColor(TFT_GREENYELLOW);
@@ -239,19 +247,20 @@ void appTouch() {
     ttgo->getTouch(x, y);
 
     if (((temp_x != x) && (temp_y != y))) {
-      ttgo->tft->fillRect(100, 90, 30, 60, TFT_BLACK);
-      ttgo->tft->setCursor(80, 100);
-      ttgo->tft->print("X: ");
-      ttgo->tft->println(x);
-      ttgo->tft->setCursor(80, 130);
-      ttgo->tft->print("Y: ");
-      ttgo->tft->println(y);
-      
       if ((x >= 20 && x <= (20 + 70)) && y >= 200 && y <= 225) {
         SerialBT.println("Left Clicked!");
       } else if ((x >= 170 && x <= 230) && (y >= 200 && y <= 225)) {
         SerialBT.println("Right Clicked!");
+      } else if ((x >= 220 && x <= 240) && (y >= 0 && y <= 30)) {
+          SerialBT.println("Close");
       } else {
+        ttgo->tft->fillRect(75, 100, 100, 90, TFT_BLACK);
+        ttgo->tft->setCursor(80, 100);
+        ttgo->tft->print("X: ");
+        ttgo->tft->println(x);
+        ttgo->tft->setCursor(80, 130);
+        ttgo->tft->print("Y: ");
+        ttgo->tft->println(y);
         SerialBT.println(String(x) + "," + String(y));
       }
     }
