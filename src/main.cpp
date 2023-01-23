@@ -17,7 +17,7 @@ uint32_t targetTime = 0; // for next 1 second display update
 
 uint8_t hh, mm, ss, mmonth, dday; // H, M, S variables
 uint16_t yyear;                   // Year is 16 bit int
-
+bool m_mode = false;
 // The basic Time Display GUI
 // if you are just updating the colon, fullUpdate =0
 // if you want to update the complete display, fullUpdate =1
@@ -232,6 +232,7 @@ void Draw_Close_button(int x, int y, int w, int h, String txt, int color) {
 }
 
 void appTouch() {
+  m_mode = true;
   uint32_t endTime = millis() + 10 * 1000; // Timeout at 10 seconds
   int16_t x = 0, y = 0;
   int16_t temp_x = 100, temp_y = 100;
@@ -243,7 +244,7 @@ void appTouch() {
   ttgo->tft->setTextSize(2);
   ttgo->tft->setTextColor(TFT_GREENYELLOW);
 
-  while (endTime > millis()) {
+  while (m_mode) {
     ttgo->getTouch(x, y);
 
     if (((temp_x != x) && (temp_y != y))) {
@@ -253,6 +254,7 @@ void appTouch() {
         SerialBT.println("Right Clicked!");
       } else if ((x >= 220 && x <= 240) && (y >= 0 && y <= 30)) {
           SerialBT.println("Close");
+          m_mode = false;
       } else {
         ttgo->tft->fillRect(75, 100, 100, 90, TFT_BLACK);
         ttgo->tft->setCursor(80, 100);
