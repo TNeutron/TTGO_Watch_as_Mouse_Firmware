@@ -30,7 +30,6 @@ void setMenuDisplay(int mSel);
 
 byte xcolon = 0; // location of the colon
 
-
 void displayTime(boolean fullUpdate) {
 
   byte xpos = 40; // Stating position for the display
@@ -211,28 +210,54 @@ void setMenuDisplay(int mSel) {
 // Will display the x and y coordinates of where you touch
 // for 10 seconds and then return to time
 
+#define LEFT_Click_Button_X 5
+#define LEFT_Click_Button_Y 205
+#define LEFT_Click_Button_Width 80
+#define LEFT_Click_Button_Heigth 25
+
+void Draw_button_wText(int x, int y, int w, int h, String txt, int color) {
+  ttgo->tft->drawRect(x, y, w, h, TFT_BLUE);
+  ttgo->tft->setTextColor(color);
+  ttgo->tft->setTextSize(1);
+  // ttgo->tft->setTextDatum(MC_DATUM);
+  ttgo->tft->drawString(txt, x + 8, y + 10);
+}
+
 void appTouch() {
-  uint32_t endTime = millis() + 10000; // Timeout at 10 seconds
+  uint32_t endTime = millis() + 10 * 1000; // Timeout at 10 seconds
   int16_t x = 0, y = 0;
   int16_t temp_x = 100, temp_y = 100;
   ttgo->tft->fillScreen(TFT_BLACK);
+  Draw_button_wText(20, 200, 70, 25, "Left Click", TFT_WHITE);
+  Draw_button_wText(230 - 90, 200, 80, 25, "Right Click", TFT_WHITE);
+  Draw_button_wText(230 - 30, 0, 30, 30, "X", TFT_RED);
+
+  ttgo->tft->setTextSize(2);
+  ttgo->tft->setTextColor(TFT_GREENYELLOW);
 
   while (endTime > millis()) {
     ttgo->getTouch(x, y);
-    ttgo->tft->fillRect(98, 100, 70, 85, TFT_BLACK);
-    ttgo->tft->setCursor(80, 100);
-    ttgo->tft->print("X:");
-    ttgo->tft->println(x);
-    ttgo->tft->setCursor(80, 130);
-    ttgo->tft->print("Y:");
-    ttgo->tft->println(y);
 
     if (((temp_x != x) && (temp_y != y))) {
-      SerialBT.println(String(x) + "," + String(y));
+      ttgo->tft->fillRect(100, 90, 30, 60, TFT_BLACK);
+      ttgo->tft->setCursor(80, 100);
+      ttgo->tft->print("X: ");
+      ttgo->tft->println(x);
+      ttgo->tft->setCursor(80, 130);
+      ttgo->tft->print("Y: ");
+      ttgo->tft->println(y);
+      
+      if ((x >= 20 && x <= (20 + 70)) && y >= 200 && y <= 225) {
+        SerialBT.println("Left Clicked!");
+      } else if ((x >= 170 && x <= 230) && (y >= 200 && y <= 225)) {
+        SerialBT.println("Right Clicked!");
+      } else {
+        SerialBT.println(String(x) + "," + String(y));
+      }
     }
     temp_x = x;
     temp_y = y;
-    delay(25);
+    delay(2);
   }
 
   while (ttgo->getTouch(x, y)) {
@@ -558,7 +583,6 @@ void setup() {
 }
 
 void loop() {
-
 
   if (targetTime < millis()) {
     targetTime = millis() + 1000;
