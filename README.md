@@ -1,7 +1,8 @@
 # [Firmware] TTGO Watch as Mouse
 
 What if you could use your TTGO T-Watch as a wireless computer mouse controller? Now your can.
-This project has been 
+
+(The UI has been customized from the TTGO T-Watch Sample Framework Example)
 
 How to use in 2 easy steps - 
 1. Put the Firmware into your TTGO.
