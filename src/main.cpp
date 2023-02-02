@@ -1,10 +1,7 @@
-// An Arduino based framework for the Lilygo T-Watch 2020
-// Much of the code is based on the sample apps for the
-// T-watch that were written and copyrighted by Lewis He.
-//(Copyright (c) 2019 lewis he)
+// TTGO T-Watch as Mouse
+// By Sayed Nowroz : https://github.com/TNeutron 
+// This project was built on TTGO Examples Sample Framework
 
-// https://www.instructables.com/id/Lilygo-T-Watch-2020-Arduino-Framework/
-// By DanGeiger
 #include "config.h"
 #include <soc/rtc.h>
 TTGOClass *ttgo;
