@@ -22,6 +22,6 @@ How to use in 2 easy steps -
 
 ## Video Preview:
 
-![Watch the video](https://youtu.be/AB10NJjFDsg)
+![Youtube Video](https://i.imgur.com/IXqFRgfm.jpg) 
 
-
+![Click HERE to Watch Youtube Video](https://www.youtube.com/watch?v=AB10NJjFDsg)
