@@ -203,10 +203,9 @@ void setMenuDisplay(int mSel) {
   ttgo->tft->print(appName[curSel]);
 }
 
+
 // Check out the touch screen
 // Will display the x and y coordinates of where you touch
-// for 10 seconds and then return to time
-
 #define LEFT_Click_Button_X 5
 #define LEFT_Click_Button_Y 205
 #define LEFT_Click_Button_Width 80
